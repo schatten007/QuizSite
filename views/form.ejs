@@ -1,0 +1,33 @@
+<%- include("partials/header") -%>
+
+
+<div class="container quiz-container">
+  <form action="/submit" method="post">
+    <div class="form-group">
+      <p class="w-50"> <%= ask %> </p>
+      
+      <div class=" btn-group-toggle" data-toggle="buttons">
+        <label class="btn btn-primary w-50 option-buttons">
+          <input type="radio" name="option" autocomplete="off" value="<%= optionA%>"> <%= optionA%>
+        </label>
+        <br>
+        <label class="btn btn-primary w-50 option-buttons">
+          <input type="radio" name="option" autocomplete="off" value="<%= optionB %>"> <%= optionB %>
+        </label>
+        <br>
+        <label class="btn btn-primary w-50 option-buttons">
+          <input type="radio" name="option" autocomplete="off" value="<%= optionC%>"> <%= optionC %>
+        </label>
+        <br>
+        <label class="btn btn-primary w-50 option-buttons">
+          <input type="radio" name="option" autocomplete="off" value="<%= optionD%>"> <%= optionD %>
+        </label>
+      </div>
+      <button type="submit" class="submit-button btn btn-primary">
+        Submit
+      </button>
+  </form>
+</div>
+
+
+<%- include("partials/footer") -%>
