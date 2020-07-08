@@ -4,6 +4,7 @@ const ejs = require("ejs");
 const _ = require("lodash");
 const array = require('lodash/array');
 const app = express();
+const https = require("https");
 
 app.set('view engine', 'ejs');
 
@@ -21,13 +22,6 @@ let question = {
     options: ["Alaska","Ontario","Fag","Islamabad"],
     answer: "Islamabad"
 }
-
-questions.push(question);
-question = {
-    ask: "Name of Afghanistans Capital?",
-    options: ["Alaska","Kabul","Fag","Islamabad"],
-    answer: "Kabul"
-}
 questions.push(question);
 
 let currentQuestion = 0;
@@ -35,11 +29,34 @@ let currentQuestion = 0;
 
 // Get Routes
 app.get("/", function (req, res) {
-    res.render("home");
+    res.render("quiz");
 });
 
-app.get("/quiz",function(req,res){
+app.get("/make-quiz",function(req,res){
+    console.log("Making Quiz");
+     // Api Parameters
+     let amount = 10;
+     let category = 18;
+     let difficulty = "easy";
+     let type = "multiple";
+     // End of Parameters
+     let url = "https://opentdb.com/api.php?" + "amount=" + amount + "&category=" + category + "&difficulty=" + difficulty + "&type=" + type;
+     console.log(url);
+    //  Make an HTTPS Get request to open trivia db api
+     https.get(url,function(response){
+        
+        console.log(response.statusCode);
 
+        response.on("data",function(data){
+            let apiData = JSON.parse(data);
+            let apiQuestions = apiData.results;
+            
+            console.log(apiData.results);
+        });
+     });
+});
+app.get("/quiz",function(req,res){
+   
     let question = questions[currentQuestion].ask;
     let oA = questions[currentQuestion].options[0];
     let oB = questions[currentQuestion].options[1];
@@ -47,9 +64,6 @@ app.get("/quiz",function(req,res){
     let oD = questions[currentQuestion].options[3];
 
     res.render("form",{ask: question, optionA: oA, optionB: oB, optionC: oC, optionD: oD});
-});
-app.get("/quiz/:status",function(req,res){
-    let requested = _.lowerCase(req.params.status);
 });
 // End Get Routes
 
