@@ -5,6 +5,7 @@ const _ = require("lodash");
 const array = require('lodash/array');
 const app = express();
 const https = require("https");
+const shuffle = require("shuffle-array");
 
 app.set('view engine', 'ejs');
 
@@ -16,60 +17,51 @@ app.listen("3000", function () {
 });
 
 // Quiz Questions
-const questions = [];
-let question = {
-    ask: "Name of Pakistans Capital?",
-    options: ["Alaska","Ontario","Fag","Islamabad"],
-    answer: "Islamabad"
-}
-questions.push(question);
+let questions = [];
+let apiQuestions = [];
 
 let currentQuestion = 0;
 // End Quiz Questions
 
 // Get Routes
 app.get("/", function (req, res) {
-    res.render("quiz");
+    let question = questions[currentQuestion].ask;
+    let options = questions[currentQuestion].options;
+    shuffle(options);
+    res.render("quiz",{question: question, options: options});
 });
 
 app.get("/make-quiz",function(req,res){
-    console.log("Making Quiz");
-     // Api Parameters
+    
+    // Api Parameters
      let amount = 10;
      let category = 18;
      let difficulty = "easy";
      let type = "multiple";
+     let encoding = "url3986";
      // End of Parameters
-     let url = "https://opentdb.com/api.php?" + "amount=" + amount + "&category=" + category + "&difficulty=" + difficulty + "&type=" + type;
+
+     let url = "https://opentdb.com/api.php?" + "amount=" + amount + "&category=" + category + "&difficulty=" + difficulty + "&type=" + type + "&encode=" + encoding;
      console.log(url);
-    //  Make an HTTPS Get request to open trivia db api
+    //  Make an HTTPS Get request to OpenTriviaDB API To get Quiz Questions
      https.get(url,function(response){
         
         console.log(response.statusCode);
 
         response.on("data",function(data){
             let apiData = JSON.parse(data);
-            let apiQuestions = apiData.results;
-            
-            console.log(apiData.results);
+            apiQuestions = apiData.results;
+            convertQuestions();
         });
-     });
-});
-app.get("/quiz",function(req,res){
-   
-    let question = questions[currentQuestion].ask;
-    let oA = questions[currentQuestion].options[0];
-    let oB = questions[currentQuestion].options[1];
-    let oC = questions[currentQuestion].options[2];
-    let oD = questions[currentQuestion].options[3];
 
-    res.render("form",{ask: question, optionA: oA, optionB: oB, optionC: oC, optionD: oD});
+     });
 });
 // End Get Routes
 
 // Post Routes
 
 app.post("/submit",function(req,res){
+    console.log(req.body);
     let selected = req.body.option;
     let correct = questions[currentQuestion].answer;
     if (currentQuestion <= questions.length)
@@ -77,7 +69,7 @@ app.post("/submit",function(req,res){
         if (selected === correct)
         {
             currentQuestion++;
-            res.redirect("/quiz");
+            res.redirect("/");
         }
         else{
             console.log("FUCKER!");
@@ -91,5 +83,35 @@ app.post("/submit",function(req,res){
 
 // End Post Routes
 
-// Randomize Outputs
+// Functions
 
+// Converting Questions From API's Format To Mine
+function convertQuestions()
+{
+    console.log("Converting Questions");
+    let q = apiQuestions[0].question;
+    let o = apiQuestions[0].incorrect_answers;
+    let a = apiQuestions[0].correct_answer;
+    let templateQuestion = {
+        ask: q,
+        options: o,
+        answer: a
+    };
+    apiQuestions.forEach(function(question){
+        q = decodeURIComponent(decodeURIComponent(question.question));
+        o = question.incorrect_answers;
+        for(var i=0; i<o.length; i++){
+            o[i] = decodeURIComponent(decodeURIComponent(o[i]));
+        }
+        a = decodeURIComponent(decodeURIComponent(question.correct_answer));
+        o.push(a);
+        question = {
+            ask: q,
+            options: o,
+            answer: a
+        };
+        questions.push(question)
+    });
+    console.log("Successfully Converted Questions");
+    console.log(questions);
+}

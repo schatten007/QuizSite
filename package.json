@@ -14,6 +14,7 @@
     "express": "^4.17.1",
     "jQuery": "^1.7.4",
     "lodash": "^4.17.17",
-    "nodemon": "^2.0.4"
+    "nodemon": "^2.0.4",
+    "shuffle-array": "^1.0.1"
   }
 }
