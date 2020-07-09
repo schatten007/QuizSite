@@ -23,12 +23,21 @@ let apiQuestions = [];
 let currentQuestion = 0;
 // End Quiz Questions
 
-// Get Routes
+// Start API Parameters
+let amountRequest = 10;
+let difficultyRequest = "easy";
+// End API Parameters
+
+// Start GET Routes
 app.get("/", function (req, res) {
     let question = questions[currentQuestion].ask;
     let options = questions[currentQuestion].options;
     shuffle(options);
     res.render("quiz",{question: question, options: options});
+});
+
+app.get("/quiz-modify",function(req,res){
+    res.render("quiz-modifier");
 });
 
 app.get("/make-quiz",function(req,res){
@@ -52,13 +61,14 @@ app.get("/make-quiz",function(req,res){
             let apiData = JSON.parse(data);
             apiQuestions = apiData.results;
             convertQuestions();
+            res.redirect("/");
         });
 
      });
 });
 // End Get Routes
 
-// Post Routes
+// Start POST Routes
 
 app.post("/submit",function(req,res){
     console.log(req.body);
@@ -79,6 +89,12 @@ app.post("/submit",function(req,res){
         res.redirect("/quiz/complete");
     }
 
+});
+
+app.post("/quiz-modifier",function(req,res){
+    amountRequest = req.body.number;
+    difficultyRequest = req.body.difficulty;
+    res.redirect("/make-quiz");
 });
 
 // End Post Routes

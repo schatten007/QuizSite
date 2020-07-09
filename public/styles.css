@@ -18,7 +18,12 @@ form .submit-button{
     margin: 1.3rem 2rem;
 }
 
-.quiz-container{
+.form-container{
     background-color: rgb(36, 36, 36);
+    color: #fff;
     margin-top: 2rem;
+}
+
+.quiz-modifier{
+    padding: 1rem;
 }
