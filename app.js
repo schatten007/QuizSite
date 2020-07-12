@@ -36,71 +36,70 @@ app.get("/quiz", function (req, res) {
     let question = questions[currentQuestion].ask;
     let options = questions[currentQuestion].options;
     shuffle(options);
-    res.render("quiz",{question: question, options: options, total: questions.length, currentQuestion: currentQuestion});
+    res.render("quiz", { question: question, options: options, total: questions.length, currentQuestion: currentQuestion });
 });
 
-app.get("/quiz-modify",function(req,res){
+app.get("/quiz-modify", function (req, res) {
+    resetAll();
     res.render("quiz-modifier");
 });
 
-app.get("/make-quiz",function(req,res){
-    
-    // Api Parameters
-     let amount = 10;
-     let category = 18;
-     let difficulty = "easy";
-     let type = "multiple";
-     let encoding = "url3986";
-     // End of Parameters
+app.get("/make-quiz", function (req, res) {
 
-     let url = "https://opentdb.com/api.php?" + "amount=" + amount + "&category=" + category + "&difficulty=" + difficulty + "&type=" + type + "&encode=" + encoding;
-     console.log(url);
+    // Api Parameters
+    let amount = 10;
+    let category = 18;
+    let difficulty = "easy";
+    let type = "multiple";
+    let encoding = "url3986";
+    // End of Parameters
+
+    let url = "https://opentdb.com/api.php?" + "amount=" + amount + "&category=" + category + "&difficulty=" + difficulty + "&type=" + type + "&encode=" + encoding;
+    console.log(url);
     //  Make an HTTPS Get request to OpenTriviaDB API To get Quiz Questions
-     https.get(url,function(response){
-        
+    https.get(url, function (response) {
+
         console.log(response.statusCode);
 
-        response.on("data",function(data){
+        response.on("data", function (data) {
             let apiData = JSON.parse(data);
             apiQuestions = apiData.results;
             convertQuestions();
             res.redirect("/quiz");
         });
 
-     });
+    });
 });
 
-app.get("/quiz/result",function(req,res){
-    res.render("quiz-results",{questions: questions, selectedOption: selectedOptions, correct:totalCorrect, incorrect:totalIncorrect});
+app.get("/quiz/result", function (req, res) {
+    res.render("quiz-results", { questions: questions, selectedOption: selectedOptions, correct: totalCorrect, incorrect: totalIncorrect });
 });
 // End Get Routes
 
 // Start POST Routes
 
-app.post("/submit",function(req,res){
+app.post("/quiz/submit", function (req, res) {
     console.log(req.body);
     let selected = req.body.option;
     let correct = questions[currentQuestion].answer;
     selectedOptions.push(selected);
-    if (selected === correct)
-        {
-            totalCorrect++;
-        }
-        else{
-            totalIncorrect++;
-        }
-    if (currentQuestion < questions.length-1)
-    {
+    if (selected === correct) {
+        totalCorrect++;
+    }
+    else {
+        totalIncorrect++;
+    }
+    if (currentQuestion < questions.length - 1) {
         res.redirect("/quiz");
         currentQuestion++;
     }
-    else{
+    else {
         res.redirect("/quiz/result");
     }
 
 });
 
-app.post("/quiz-modifier",function(req,res){
+app.post("/quiz-modifier", function (req, res) {
     amountRequest = req.body.number;
     difficultyRequest = req.body.difficulty;
     res.redirect("/make-quiz");
@@ -111,8 +110,7 @@ app.post("/quiz-modifier",function(req,res){
 // Functions
 
 // Converting Questions From API's Format To Mine
-function convertQuestions()
-{
+function convertQuestions() {
     console.log("Converting Questions");
     let q = apiQuestions[0].question;
     let o = apiQuestions[0].incorrect_answers;
@@ -122,10 +120,10 @@ function convertQuestions()
         options: o,
         answer: a
     };
-    apiQuestions.forEach(function(question){
+    apiQuestions.forEach(function (question) {
         q = decodeURIComponent(decodeURIComponent(question.question));
         o = question.incorrect_answers;
-        for(var i=0; i<o.length; i++){
+        for (var i = 0; i < o.length; i++) {
             o[i] = decodeURIComponent(decodeURIComponent(o[i]));
         }
         a = decodeURIComponent(decodeURIComponent(question.correct_answer));
@@ -139,4 +137,14 @@ function convertQuestions()
     });
     console.log("Successfully Converted Questions");
     console.log(questions);
+}
+
+function resetAll() {
+    questions = [];
+    apiQuestions = [];
+    selectedOptions = [];
+
+    currentQuestion = 0;
+    totalCorrect = 0;
+    totalIncorrect = 0;
 }

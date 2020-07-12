@@ -3,6 +3,15 @@
 let sec = 0;
 let min = 0;
 
+let clock = document.querySelector("#clock");
+let currentQuestion = document.querySelector("#question-count");
+let questionText = currentQuestion.textContent.slice(0,1);
+
+if(questionText == "0")
+{
+    sessionStorage.removeItem("secondsElapsed");
+    sessionStorage.removeItem("minutesElapsed");
+}
 let storedSec = sessionStorage.getItem("secondsElapsed");
 let storedMin = sessionStorage.getItem("minutesElapsed");
 
@@ -42,7 +51,7 @@ setInterval(function(){
             timeString = min + ":" + sec; 
         }
     }
-    $("#clock").text(timeString);
+    clock.textContent = (timeString);
     sessionStorage.setItem("minutesElapsed", min);
     sessionStorage.setItem("secondsElapsed", sec);
 }, 1000);
