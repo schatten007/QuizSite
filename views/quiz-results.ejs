@@ -1,0 +1,36 @@
+<%- include("partials/header") -%>
+
+<div class="container">
+    <table class="table table-bordered table-hover">
+        <thead class="thead-dark">
+            <tr>
+                <th>Question #</th>
+                <th>Question</th>
+                <th>You Selected</th>
+                <th>Correct Option</th>
+            </tr>
+        </thead> 
+        <% let i=0; %>
+        <% questions.forEach(function(question){ %>
+            <% let c = "table-success" %>
+            <% if(selectedOption[i] != question.answer){ %>
+            <% c = "table-danger" }%>
+            <tr class="<%= c %>">
+                <td> <%= i+1 %> </td>
+                <td> <%= question.ask %> </td>
+                <td> <%= selectedOption[i] %> </td>
+                <td> <%= question.answer %> </td>
+            </tr>
+            <% i++; %>
+        <% }) %>
+            <tr>
+                <td></td>
+                <td class="left">Correct: <%= correct %> </td>
+                <td>Incorrect: <%= incorrect %></td>
+                <td>Total: <%= correct+incorrect %></td>
+            </tr>
+    </table>
+</div>
+
+<script src="restrictback.js"></script>
+<% include("partials/footer")  -%>

@@ -27,3 +27,7 @@ form .submit-button{
 .quiz-modifier{
     padding: 1rem;
 }
+
+.inline{
+    display: inline;
+}

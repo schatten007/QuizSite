@@ -16,11 +16,14 @@ app.listen("3000", function () {
     console.log("Started server on port 3000");
 });
 
-// Quiz Questions
+// Quiz Questions Data
 let questions = [];
 let apiQuestions = [];
+let selectedOptions = [];
 
 let currentQuestion = 0;
+let totalCorrect = 0;
+let totalIncorrect = 0;
 // End Quiz Questions
 
 // Start API Parameters
@@ -29,11 +32,11 @@ let difficultyRequest = "easy";
 // End API Parameters
 
 // Start GET Routes
-app.get("/", function (req, res) {
+app.get("/quiz", function (req, res) {
     let question = questions[currentQuestion].ask;
     let options = questions[currentQuestion].options;
     shuffle(options);
-    res.render("quiz",{question: question, options: options});
+    res.render("quiz",{question: question, options: options, total: questions.length, currentQuestion: currentQuestion});
 });
 
 app.get("/quiz-modify",function(req,res){
@@ -61,10 +64,14 @@ app.get("/make-quiz",function(req,res){
             let apiData = JSON.parse(data);
             apiQuestions = apiData.results;
             convertQuestions();
-            res.redirect("/");
+            res.redirect("/quiz");
         });
 
      });
+});
+
+app.get("/quiz/result",function(req,res){
+    res.render("quiz-results",{questions: questions, selectedOption: selectedOptions, correct:totalCorrect, incorrect:totalIncorrect});
 });
 // End Get Routes
 
@@ -74,19 +81,21 @@ app.post("/submit",function(req,res){
     console.log(req.body);
     let selected = req.body.option;
     let correct = questions[currentQuestion].answer;
-    if (currentQuestion <= questions.length)
-    {
-        if (selected === correct)
+    selectedOptions.push(selected);
+    if (selected === correct)
         {
-            currentQuestion++;
-            res.redirect("/");
+            totalCorrect++;
         }
         else{
-            console.log("FUCKER!");
+            totalIncorrect++;
         }
+    if (currentQuestion < questions.length-1)
+    {
+        res.redirect("/quiz");
+        currentQuestion++;
     }
     else{
-        res.redirect("/quiz/complete");
+        res.redirect("/quiz/result");
     }
 
 });
