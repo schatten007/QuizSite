@@ -55,3 +55,27 @@ setInterval(function(){
     sessionStorage.setItem("minutesElapsed", min);
     sessionStorage.setItem("secondsElapsed", sec);
 }, 1000);
+
+let totalQuestion = document.querySelector("#question-count").textContent;
+totalQuestion = totalQuestion.slice(2,totalQuestion.length);
+console.log(totalQuestion);
+
+let questionCount = 0;
+
+console.log(questionText);
+if(questionText > 0)
+{
+    questionCount = sessionStorage.getItem("qCount");
+}
+
+questionCount++;
+sessionStorage.setItem("qCount", questionText);
+console.log(questionCount);
+
+let btn = document.querySelector(".btnio");
+
+if(questionCount>=totalQuestion)
+{
+    console.log("Hack WORKS!");
+    btn.disabled = true;
+}

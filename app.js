@@ -36,7 +36,7 @@ let difficultyRequest = "easy";
 // Start GET Routes //
 
 //  To Display Quiz Question Saved in Quiz Array
-app.get("/quiz", function (req, res) {
+app.get("/general-quiz", function (req, res) {
     let question = questions[currentQuestion].ask;
     let options = questions[currentQuestion].options;
     shuffle(options);
@@ -44,13 +44,13 @@ app.get("/quiz", function (req, res) {
 });
 
 // To Display the Quiz Modification Form
-app.get("/quiz-modify", function (req, res) {
+app.get("/general-quiz/quiz-modify", function (req, res) {
     resetAll();
     res.render("quiz-modifier");
 });
 
-// To Generate Random Quiz Question
-app.get("/make-quiz", function (req, res) {
+// To Generate Random Quiz Question (Through API)
+app.get("/general-quiz/make-quiz", function (req, res) {
 
     console.log(amountRequest);
     console.log(difficultyRequest);
@@ -73,25 +73,28 @@ app.get("/make-quiz", function (req, res) {
             let apiData = JSON.parse(data);
             apiQuestions = apiData.results;
             convertQuestions();
-            res.redirect("/quiz");
+            res.redirect("/general-quiz");
         });
 
     });
 });
 
-app.get("/quiz/result", function (req, res) {
-    res.render("quiz-results", { questions: questions, selectedOption: selectedOptions, correct: totalCorrect, incorrect: totalIncorrect });
+// To Display Result Table After Quiz Is Complete
+app.get("/general-quiz/result", function (req, res) {
+    res.render("general-quiz-results", { questions: questions, selectedOption: selectedOptions, correct: totalCorrect, incorrect: totalIncorrect });
 });
 
 // End Get Routes //
 
 // Start POST Routes //
 
-app.post("/quiz/submit", function (req, res) {
+// Answer Authentication for GENERAL Quiz
+app.post("/general-quiz/submit", function (req, res) {
     console.log(req.body);
     let selected = req.body.option;
     let correct = questions[currentQuestion].answer;
     selectedOptions.push(selected);
+    console.log("Current Question " + currentQuestion);
     if (selected === correct) {
         totalCorrect++;
     }
@@ -99,19 +102,19 @@ app.post("/quiz/submit", function (req, res) {
         totalIncorrect++;
     }
     if (currentQuestion < questions.length - 1) {
-        res.redirect("/quiz");
+        res.redirect("/general-quiz");
         currentQuestion++;
     }
     else {
-        res.redirect("/quiz/result");
+        res.redirect("/general-quiz/result");
     }
-
 });
 
-app.post("/quiz-modifier", function (req, res) {
+// Saves user data for Quiz Question Amount and Difficulty
+app.post("/general-quiz/quiz-modifier", function (req, res) {
     amountRequest = req.body.number;
     difficultyRequest = req.body.difficulty;
-    res.redirect("/make-quiz");
+    res.redirect("/general-quiz/make-quiz");
 });
 
 // End Post Routes //
