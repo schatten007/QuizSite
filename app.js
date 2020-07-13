@@ -16,7 +16,8 @@ app.listen("3000", function () {
     console.log("Started server on port 3000");
 });
 
-// Quiz Questions Data
+// Quiz Questions Data //
+
 let questions = [];
 let apiQuestions = [];
 let selectedOptions = [];
@@ -24,14 +25,17 @@ let selectedOptions = [];
 let currentQuestion = 0;
 let totalCorrect = 0;
 let totalIncorrect = 0;
-// End Quiz Questions
 
-// Start API Parameters
+// End Quiz Questions //
+
+// Start API Parameters //
 let amountRequest = 10;
 let difficultyRequest = "easy";
-// End API Parameters
+// End API Parameters //
 
-// Start GET Routes
+// Start GET Routes //
+
+//  To Display Quiz Question Saved in Quiz Array
 app.get("/quiz", function (req, res) {
     let question = questions[currentQuestion].ask;
     let options = questions[currentQuestion].options;
@@ -39,23 +43,27 @@ app.get("/quiz", function (req, res) {
     res.render("quiz", { question: question, options: options, total: questions.length, currentQuestion: currentQuestion });
 });
 
+// To Display the Quiz Modification Form
 app.get("/quiz-modify", function (req, res) {
     resetAll();
     res.render("quiz-modifier");
 });
 
+// To Generate Random Quiz Question
 app.get("/make-quiz", function (req, res) {
 
+    console.log(amountRequest);
+    console.log(difficultyRequest);
     // Api Parameters
-    let amount = 10;
+    let amount = amountRequest;
     let category = 18;
-    let difficulty = "easy";
+    let difficulty = difficultyRequest;
     let type = "multiple";
     let encoding = "url3986";
     // End of Parameters
 
     let url = "https://opentdb.com/api.php?" + "amount=" + amount + "&category=" + category + "&difficulty=" + difficulty + "&type=" + type + "&encode=" + encoding;
-    console.log(url);
+
     //  Make an HTTPS Get request to OpenTriviaDB API To get Quiz Questions
     https.get(url, function (response) {
 
@@ -74,9 +82,10 @@ app.get("/make-quiz", function (req, res) {
 app.get("/quiz/result", function (req, res) {
     res.render("quiz-results", { questions: questions, selectedOption: selectedOptions, correct: totalCorrect, incorrect: totalIncorrect });
 });
-// End Get Routes
 
-// Start POST Routes
+// End Get Routes //
+
+// Start POST Routes //
 
 app.post("/quiz/submit", function (req, res) {
     console.log(req.body);
@@ -105,11 +114,12 @@ app.post("/quiz-modifier", function (req, res) {
     res.redirect("/make-quiz");
 });
 
-// End Post Routes
+// End Post Routes //
 
 // Functions
 
 // Converting Questions From API's Format To Mine
+
 function convertQuestions() {
     console.log("Converting Questions");
     let q = apiQuestions[0].question;
