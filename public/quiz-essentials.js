@@ -24,7 +24,7 @@ if (storedSec != null)
     sec = storedSec;
 }
 
-setInterval(function(){
+const timerClock = setInterval(function(){
     sec++;
     if (sec>=60)
     {
@@ -78,4 +78,5 @@ if(questionCount>=totalQuestion)
 {
     console.log("Hack WORKS!");
     btn.disabled = true;
+    clearInterval(timerClock);
 }
